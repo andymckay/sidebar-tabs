@@ -1,0 +1,77 @@
+body, div {
+    padding: 0;
+    margin: 0;
+    font-size: 12px;
+    font-family: Arial, Helvetica, sans-serif;
+    background: whitesmoke;
+}
+
+div.wrapper {
+    border-top: 1px solid lightgrey;
+    border-left: 5px solid whitesmoke;
+    padding-top: 0.3em;
+    padding-bottom: 0.5em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    padding-right: 1em;
+    font-size: 1em;
+}
+
+div.active {
+    border-left: 5px solid green;
+}
+
+div.wrapper:hover {
+    background: white;
+}
+
+#tab-list div.wrapper:first-child {
+    border-top: none;
+}
+
+a {
+    color: #777;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+a.tab {
+    padding-top: 0.2em;
+    margin-right: 0.3em;
+    margin-left: 0.2em;
+    font-weight: 700;
+}
+
+a.close {
+    padding-bottom: 0.1em;
+    margin-left: 0.2em;
+    margin-right: 0.2em;
+    padding-left: 0.3em;
+    padding-right: 0.3em;
+    visibility: hidden;
+}
+
+div.wrapper:hover > a.close {
+    color: white;
+    background-color: grey;
+    border-radius: 3px;
+    visibility: visible;
+}
+
+div.top {
+    padding-top: 0.5em;
+    padding-bottom: 1em;
+    padding-left: 1.8em;
+}
+
+#add {
+    border-radius: 3px;
+    padding: 0.3em;
+    background-color: lightgrey;
+}
+
+#add:hover {
+    color: white;
+    background-color: grey;
+}

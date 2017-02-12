@@ -1,0 +1,18 @@
+{
+  "description": "Sidebar Tabs",
+  "homepage_url": "https://github.com/andymckay/sidebar-tabs",
+  "manifest_version": 2,
+  "name": "Sidebar Tabs",
+  "version": "1.0",
+  "sidebar_action": {
+    "default_title": "Tabs Sidebar",
+    "default_panel": "sidebar.html"
+  },
+  "icons": {
+    "48": "sidebar.svg"
+  },
+  "permissions": [
+    "tabs",
+    "webNavigation"
+  ]
+}
