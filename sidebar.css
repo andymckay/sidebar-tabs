@@ -9,13 +9,13 @@ body, div {
 div.wrapper {
     border-top: 1px solid lightgrey;
     border-left: 5px solid whitesmoke;
-    padding-top: 0.3em;
-    padding-bottom: 0.5em;
+    padding-top: 0.7em;
+    padding-bottom: 0.7em;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
     padding-right: 1em;
-    font-size: 1em;
+    font-size: 1.1em;
 }
 
 div.active {
@@ -37,41 +37,68 @@ a {
 }
 
 a.tab {
-    padding-top: 0.2em;
+    padding-top: 0.5em;
     margin-right: 0.3em;
     margin-left: 0.2em;
     font-weight: 700;
 }
 
-a.close {
+a.button {
+    padding-top: 0em;
     padding-bottom: 0.1em;
     margin-left: 0.2em;
     margin-right: 0.2em;
     padding-left: 0.3em;
     padding-right: 0.3em;
-    visibility: hidden;
+    border-radius: 3px;
 }
 
 div.wrapper:hover > a.close {
     color: white;
     background-color: grey;
-    border-radius: 3px;
-    visibility: visible;
 }
 
-div.top {
+#top {
     padding-top: 0.5em;
     padding-bottom: 1em;
     padding-left: 1.8em;
 }
 
-#add {
+#top a {
     border-radius: 3px;
     padding: 0.3em;
     background-color: lightgrey;
 }
 
-#add:hover {
+#top a:hover {
     color: white;
     background-color: grey;
+}
+
+a.sound {
+    background-color: grey;
+    color: white;
+}
+
+a.muted {
+    background-color: LightCoral;
+    color: white;
+}
+
+a.muted.sound {
+    background: linear-gradient(to right, LightCoral, grey);
+}
+
+a.drag {
+  -moz-user-select: none;
+  cursor: move;
+}
+
+.over {
+   border-bottom: 1px solid darkblue;
+}
+
+img.icon {
+    height: 12px;
+    width: 12px;
 }
