@@ -89,6 +89,11 @@ a.muted.sound {
     background: linear-gradient(to right, LightCoral, grey);
 }
 
+a.pin.pinned {
+    background-color: LightCoral;
+    color: white;
+}
+
 a.drag {
   -moz-user-select: none;
   cursor: move;
@@ -101,4 +106,5 @@ a.drag {
 img.icon {
     height: 12px;
     width: 12px;
+    display: inline-block;
 }

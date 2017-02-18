@@ -47,10 +47,10 @@ SideTab.prototype = {
     });
 
     let drag = null;
-    for (let method of ['close', 'mute', 'drag']) {
+    for (let method of ['close', 'mute', 'drag', 'pin']) {
       let button = document.createElement('a');
       button.className = `button ${method}`;
-      button.href = method;
+      button.href = '#';
       button.innerText = method;
 
       if (method == 'drag') {
@@ -63,7 +63,7 @@ SideTab.prototype = {
 
     let icon = document.createElement('img');
     icon.className = 'icon';
-    icon.src = '';
+    icon.style.visibility = 'hidden';
 
     div.appendChild(icon);
     div.appendChild(a);
@@ -109,10 +109,25 @@ SideTab.prototype = {
     this._get('mute').classList.remove('muted');
   },
   setIcon: function(url) {
-    this._get('icon').src = url;
+    let icon = this._get('icon');
+    if (!url) {
+      icon.src = '';
+      icon.style.visibility = 'hidden';
+    } else {
+      icon.src = url;
+      icon.style.visibility = 'unset';
+    }
   },
   setSpinner: function() {
-    this._get('icon').src = 'rolling.svg';
+    let icon = this._get('icon');
+    icon.src = 'rolling.svg';
+    icon.style.visibility = 'unset';
+  },
+  pinTab: function() {
+    this._get('pin').classList.add('pinned');
+  },
+  unpinTab: function() {
+    this._get('pin').classList.remove('pinned');
   }
 };
 
@@ -124,7 +139,7 @@ var SideTabList = function(){
 
 SideTabList.prototype = {
   populate: function() {
-    // Really want to do current Window here but possible bug?
+    // Really want to do current Window here but possible bug 1340739.
     browser.tabs.query({})
     .then((tabs) => {
       for (let tab of tabs) {
@@ -141,6 +156,7 @@ SideTabList.prototype = {
     }
     this.setAudible(tab);
     this.setIcon(tab);
+    this.setPinned(tab);
   },
   setActive: function(tabId) {
     if (this.active) {
@@ -196,6 +212,13 @@ SideTabList.prototype = {
   },
   setSpinner: function(tab) {
     this.tabs[tab.id].setSpinner();
+  },
+  setPinned: function(tab) {
+    if (tab.pinned) {
+      this.tabs[tab.id].pinTab();
+    } else {
+      this.tabs[tab.id].unpinTab();
+    }
   }
 };
 
@@ -237,6 +260,9 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete') {
     sidetabs.setIcon(tab);
   }
+  if (changeInfo.pinned === true || changeInfo.pinned === false) {
+    sidetabs.setPinned(tab);
+  }
 });
 
 // WebNavigation Events.
@@ -250,8 +276,7 @@ browser.webNavigation.onCompleted.addListener((details) => {
 // Listen to top bar.
 document.getElementById('add').addEventListener(
   'click', ((event) => {
-    // Opening about:newtab would be nice here, but we can't. Bug?
-    browser.tabs.create({url: 'about:blank'});
+    browser.tabs.create();
     event.preventDefault();
   })
 );
@@ -294,6 +319,13 @@ function buttonEvent(event) {
       browser.tabs.update(tabId, {'muted': false});
     } else {
       browser.tabs.update(tabId, {'muted': true});
+    }
+  }
+  if (event.target.classList.contains('pin')) {
+    if (event.target.classList.contains('pinned')) {
+      browser.tabs.update(tabId, {'pinned': false});
+    } else {
+      browser.tabs.update(tabId, {'pinned': true});
     }
   }
   event.preventDefault();
