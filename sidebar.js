@@ -264,6 +264,10 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 });
 
+browser.tabs.onDetached.addListener((tabId, details) => {
+  sidetabs.remove(tabId);
+});
+
 // WebNavigation Events.
 browser.webNavigation.onCompleted.addListener((details) => {
   browser.tabs.get(details.tabId)
