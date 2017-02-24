@@ -139,8 +139,7 @@ var SideTabList = function(){
 
 SideTabList.prototype = {
   populate: function() {
-    // Really want to do current Window here but possible bug 1340739.
-    browser.tabs.query({})
+    browser.tabs.query({currentWindow: true})
     .then((tabs) => {
       for (let tab of tabs) {
         this.create(tab);
@@ -291,7 +290,7 @@ document.getElementById('reset').addEventListener(
 
 document.getElementById('sort').addEventListener(
   'click', ((event) => {
-    browser.tabs.query({})
+    browser.tabs.query({currentWindow: true})
     .then((tabs) => {
       tabs.sort((a, b) => {
         function normalise(url) {
