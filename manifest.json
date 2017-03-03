@@ -14,5 +14,13 @@
   "permissions": [
     "tabs",
     "webNavigation"
-  ]
+  ],
+  "commands": {
+    "_execute_sidebar_action": {
+      "suggested_key": {
+          "default": "Ctrl+Shift+O",
+          "mac": "Command+Shift+O"
+      }
+    }
+  }
 }
