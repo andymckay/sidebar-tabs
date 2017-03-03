@@ -11,11 +11,10 @@ div.wrapper {
     padding-left: 0.3em;
     padding-top: 0.7em;
     padding-bottom: 0.7em;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
     padding-right: 1em;
     font-size: 1.1em;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 div.active {
@@ -45,12 +44,20 @@ a {
 }
 
 a.tab {
-    padding-top: 0.5em;
+    padding-top: 0.1em;
+    padding-bottom: 0.1em;
     margin-right: 0.3em;
     margin-left: 0.2em;
+    width: 100%;
+    text-overflow: ellipsis;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+
 }
 
 a.button {
+    margin-top: 0.1em;
     padding-top: 0em;
     padding-bottom: 0.1em;
     margin-left: 0.2em;
@@ -111,13 +118,12 @@ a.button.right.drag {
     padding-bottom: 0.3em;
     padding-left: 0.5em;
     padding-right: 0.5em;
-    background-color: #ddd;
-    color: #666;
+    background-color: #f6f6f6;
+    color: #333;
 }
 
 #top a:hover {
-    color: white;
-    background-color: #333;
+    border-bottom: 4px solid firebrick;
 }
 
 a.sound {
@@ -149,8 +155,9 @@ a.drag {
 }
 
 img.icon {
+    position: relative;
+    padding-bottom: 0.25em;
     height: 12px;
     width: 12px;
     padding-right: 2px;
-    display: inline-block;
 }
