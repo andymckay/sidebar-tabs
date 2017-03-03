@@ -4,9 +4,11 @@ body, div {
     font-size: 12px;
     background: #444;
     font-family: 'Source Sans Pro', sans-serif;
+    min-width: 200px;
 }
 
 div.wrapper {
+    padding-left: 0.3em;
     padding-top: 0.7em;
     padding-bottom: 0.7em;
     text-overflow: ellipsis;
@@ -22,6 +24,14 @@ div.active {
 
 div.wrapper:hover {
     background: #222;
+}
+
+div.wrapper a.button {
+    visibility: hidden;
+}
+
+div.wrapper:hover a.button {
+    visibility: visible;
 }
 
 #tab-list div.wrapper:first-child {
@@ -48,23 +58,61 @@ a.button {
     padding-left: 0.3em;
     padding-right: 0.3em;
     border-radius: 3px;
+    background-color: #333;
 }
 
 a.button:hover {
     color: whitesmoke;
-    background-color: #333;
+    background-color: #666;
+}
+
+a.button.close:hover {
+    background-color: firebrick;
+}
+
+a.button.reload:hover {
+    background-color: green;
+}
+
+a.button.right {
+    position: absolute;
+    z-index: 1;
+}
+
+a.button.right.close {
+    right: 10px;
+}
+
+a.button.right.pin {
+    right: 62px;
+}
+
+a.button.right.mute {
+    right: 43px;
+}
+
+a.button.reload.reload {
+    right: 26px;
+}
+
+a.button.right.drag {
+    right: 84px;
 }
 
 #top {
-    padding-top: 0.5em;
     padding-bottom: 1em;
     padding-left: 1.8em;
 }
 
 #top a {
-    border-radius: 3px;
-    padding: 0.3em;
-    background-color: #222;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    padding-top: 0.5em;
+    padding-bottom: 0.3em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    background-color: #ddd;
+    color: #666;
 }
 
 #top a:hover {

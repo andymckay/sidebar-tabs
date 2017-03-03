@@ -5,6 +5,14 @@ var SideTab = function(){
   this.title = null;
 };
 
+var textMap = {
+  drag: '⇔',
+  reload: '↺',
+  pin: '⇧',
+  mute: '♫',
+  close: 'x'
+};
+
 SideTab.prototype = {
   _drags: function(wrapper, element) {
     element.addEventListener('dragstart', handleDragStart, false);
@@ -47,11 +55,11 @@ SideTab.prototype = {
     });
 
     let drag = null;
-    for (let method of ['close', 'mute', 'drag', 'pin']) {
+    for (let method of ['close', 'reload', 'mute', 'drag', 'pin']) {
       let button = document.createElement('a');
-      button.className = `button ${method}`;
+      button.className = `button right ${method}`;
       button.href = '#';
-      button.innerText = method;
+      button.innerText = textMap[method];
 
       if (method == 'drag') {
         drag = button;
@@ -317,6 +325,9 @@ function buttonEvent(event) {
   let tabId = parseInt(event.target.parentNode.id);
   if (event.target.classList.contains('close')) {
     browser.tabs.remove(tabId);
+  }
+  if (event.target.classList.contains('reload')) {
+    browser.tabs.reload(tabId);
   }
   if (event.target.classList.contains('mute')) {
     if (event.target.classList.contains('muted')) {
