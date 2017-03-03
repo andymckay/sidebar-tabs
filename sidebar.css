@@ -155,9 +155,9 @@ a.drag {
 }
 
 img.icon {
-    position: relative;
     padding-bottom: 0.25em;
     height: 12px;
     width: 12px;
     padding-right: 2px;
+    display: inline-block;
 }
