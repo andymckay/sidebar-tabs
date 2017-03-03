@@ -2,13 +2,11 @@ body, div {
     padding: 0;
     margin: 0;
     font-size: 12px;
-    font-family: Arial, Helvetica, sans-serif;
-    background: whitesmoke;
+    background: #444;
+    font-family: 'Source Sans Pro', sans-serif;
 }
 
 div.wrapper {
-    border-top: 1px solid lightgrey;
-    border-left: 5px solid whitesmoke;
     padding-top: 0.7em;
     padding-bottom: 0.7em;
     text-overflow: ellipsis;
@@ -19,11 +17,11 @@ div.wrapper {
 }
 
 div.active {
-    border-left: 5px solid green;
+    background: #333;
 }
 
 div.wrapper:hover {
-    background: white;
+    background: #222;
 }
 
 #tab-list div.wrapper:first-child {
@@ -31,7 +29,7 @@ div.wrapper:hover {
 }
 
 a {
-    color: #777;
+    color: whitesmoke;
     text-decoration: none;
     cursor: pointer;
 }
@@ -40,7 +38,6 @@ a.tab {
     padding-top: 0.5em;
     margin-right: 0.3em;
     margin-left: 0.2em;
-    font-weight: 700;
 }
 
 a.button {
@@ -53,9 +50,9 @@ a.button {
     border-radius: 3px;
 }
 
-div.wrapper:hover > a.close {
-    color: white;
-    background-color: grey;
+a.button:hover {
+    color: whitesmoke;
+    background-color: #333;
 }
 
 #top {
@@ -67,12 +64,12 @@ div.wrapper:hover > a.close {
 #top a {
     border-radius: 3px;
     padding: 0.3em;
-    background-color: lightgrey;
+    background-color: #222;
 }
 
 #top a:hover {
     color: white;
-    background-color: grey;
+    background-color: #333;
 }
 
 a.sound {
@@ -106,5 +103,6 @@ a.drag {
 img.icon {
     height: 12px;
     width: 12px;
+    padding-right: 2px;
     display: inline-block;
 }

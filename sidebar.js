@@ -156,6 +156,7 @@ SideTabList.prototype = {
     this.setAudible(tab);
     this.setIcon(tab);
     this.setPinned(tab);
+    this.setTitle(tab);
   },
   setActive: function(tabId) {
     if (this.active) {
