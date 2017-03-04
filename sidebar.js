@@ -6,19 +6,17 @@ var SideTab = function(){
 };
 
 var textMap = {
-  drag: '⇔',
   reload: '↺',
   pin: '⇧',
   mute: '♫',
   close: 'x'
 };
 
+if (browser.contextualIdentities === undefined) {
+  console.log('browser.contextualIdentities not available. Check that the privacy.userContext.enabled pref is set to true, and reload the add-on.');
+}
+
 SideTab.prototype = {
-  _drags: function(wrapper, element) {
-    element.addEventListener('dragstart', handleDragStart, false);
-    wrapper.addEventListener('dragover', handleDragOver, false);
-    wrapper.addEventListener('drop', handleDrop, false);
-  },
   _get: function(type) {
     let wrapper = document.getElementById(this.id);
     if (type) {
@@ -43,6 +41,7 @@ SideTab.prototype = {
 
     let div = document.createElement('div');
     div.className = 'wrapper';
+    div.setAttribute('contextmenu', 'tabmenu');
     div.id = this.id;
 
     let a = document.createElement('a');
@@ -55,17 +54,11 @@ SideTab.prototype = {
       event.preventDefault();
     });
 
-    let drag = null;
-    for (let method of ['close', 'reload', 'mute', 'drag', 'pin']) {
+    for (let method of ['close', 'reload', 'mute', 'pin']) {
       let button = document.createElement('a');
       button.className = `button right ${method}`;
       button.href = '#';
       button.innerText = textMap[method];
-
-      if (method == 'drag') {
-        drag = button;
-      }
-
       button.addEventListener('click', buttonEvent);
       div.appendChild(button);
     }
@@ -74,11 +67,18 @@ SideTab.prototype = {
     icon.className = 'icon';
     icon.style.visibility = 'hidden';
 
+    let context = document.createElement('span');
+    context.className = 'context';
+    context.style.visibility = 'hidden';
+
     div.appendChild(icon);
+    div.appendChild(context);
     div.appendChild(a);
     tabList.appendChild(div);
 
-    this._drags(div, drag);
+    div.addEventListener('dragstart', handleDragStart, false);
+    div.addEventListener('dragover', handleDragOver, false);
+    div.addEventListener('drop', handleDrop, false);
   },
   remove: function() {
     this._get().remove();
@@ -153,6 +153,12 @@ SideTab.prototype = {
     this._get('pin').classList.remove('pinned');
     this._get().classList.remove('pinned');
     this._get().classList.add('unpinned');
+  },
+  setContext: function(context) {
+    let span = this._get('context');
+    span.style.visibility = 'unset';
+    span.style.backgroundColor = context.color;
+    span.title = context.name;
   }
 };
 
@@ -183,6 +189,13 @@ SideTabList.prototype = {
     this.setIcon(tab);
     this.setPinned(tab);
     this.setTitle(tab);
+    if (tab.cookieStoreId) {
+      browser.contextualIdentities.get(tab.cookieStoreId)
+        .then((context) => {
+          this.setContext(tab, context)
+        }
+      );
+    }
   },
   setActive: function(tabId) {
     if (this.active) {
@@ -242,7 +255,9 @@ SideTabList.prototype = {
     this.tabs[tab.id].setError();
   },
   setSpinner: function(tab) {
-    this.tabs[tab.id].setSpinner();
+    if (this.tabs[tab.id]) {
+      this.tabs[tab.id].setSpinner();
+    }
   },
   setPinned: function(tab) {
     if (tab.pinned) {
@@ -250,7 +265,10 @@ SideTabList.prototype = {
     } else {
       this.tabs[tab.id].unpinTab();
     }
-  }
+  },
+  setContext: function(tab, context) {
+    this.tabs[tab.id].setContext(context);
+  },
 };
 
 // Tabs Events.
@@ -260,7 +278,6 @@ browser.tabs.onActivated.addListener((details) => {
 
 browser.tabs.onCreated.addListener((tab) => {
   sidetabs.create(tab);
-  sidetabs.setActive(tab.id);
 });
 
 browser.tabs.onMoved.addListener((tabId, moveInfo) => {
@@ -300,10 +317,6 @@ browser.tabs.onDetached.addListener((tabId, details) => {
   sidetabs.remove(tabId);
 });
 
-browser.webNavigation.onCommitted.addListener((tabId, details) => {
-  sidetabs.setAudible(tab, false);
-});
-
 // WebNavigation Events.
 browser.webNavigation.onCompleted.addListener((details) => {
   browser.tabs.get(details.tabId)
@@ -314,7 +327,6 @@ browser.webNavigation.onCompleted.addListener((details) => {
 });
 
 browser.webNavigation.onErrorOccurred.addListener((details) => {
-  console.log('setting error');
   browser.tabs.get(details.tabId)
   .then((tab) => {
     sidetabs.setError(tab);
@@ -408,18 +420,20 @@ function handleDrop(event) {
   if (event.stopPropagation) {
     event.stopPropagation();
   }
-
-  let tabId = dragElement.parentNode.id;
+  let tabId = dragElement.id;
   let element = event.target;
 
-  if (event.target.parentNode.classList.contains('wrapper') ||
-      event.target.parentNode.id == 'top') {
-    element = event.target.parentNode;
+  if (element.className.indexOf('wrapper') == -1) {
+    element = element.parentNode;
   }
 
   let pos = 0;
   if (element.id != 'top') {
-    pos = sidetabs.getPos(element.id) + 1;
+    try {
+      pos = sidetabs.getPos(element.id) + 1;
+    } catch (e if e instanceof TypeError) {
+      console.log(`No tab of id ${element.id} for drop, invalid target?`);
+    }
   }
 
   browser.tabs.move(parseInt(tabId), {index: pos});

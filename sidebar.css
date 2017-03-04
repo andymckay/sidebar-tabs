@@ -81,6 +81,20 @@ a.button.reload:hover {
     background-color: green;
 }
 
+span.context {
+    position: absolute;
+    right: 0;
+    z-index: 1;
+    height: 23px;
+    width: 5px;
+    display: inline-block;
+    opacity: 0.7;
+}
+
+div.wrapper:hover span.context {
+    opacity: 1;
+}
+
 a.button.right {
     position: absolute;
     z-index: 1;

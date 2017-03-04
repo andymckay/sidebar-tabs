@@ -7,12 +7,14 @@
   "sidebar_action": {
     "default_title": "Tabs Sidebar",
     "default_panel": "sidebar.html",
-    "default_icon": "error.svg"
+    "default_icon": "sidebar.svg"
   },
   "icons": {
-    "48": "error.svg"
+    "48": "sidebar.svg"
   },
   "permissions": [
+    "contextualIdentities",
+    "cookies",
     "tabs",
     "webNavigation"
   ],
@@ -28,5 +30,8 @@
       "gecko": {
           "strict_min_version": "54.0a1"
       }
+  },
+  "background": {
+    "scripts": ["background.js"]
   }
 }

@@ -11,10 +11,8 @@ This is a simple implementation of an add-on that shows tabs in the sidebar. It 
 * spinners for the tabs
 * filter by windows
 * pinning
-
-To do:
-
 * fix muting
 * cope with window move events
-* possible context menus
 * pinning drag and drop
+* tab errors
+* contextualIdentities
