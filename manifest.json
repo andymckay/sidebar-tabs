@@ -6,10 +6,11 @@
   "version": "1.0",
   "sidebar_action": {
     "default_title": "Tabs Sidebar",
-    "default_panel": "sidebar.html"
+    "default_panel": "sidebar.html",
+    "default_icon": "error.svg"
   },
   "icons": {
-    "48": "sidebar.svg"
+    "48": "error.svg"
   },
   "permissions": [
     "tabs",
@@ -22,5 +23,10 @@
           "mac": "Command+Shift+O"
       }
     }
+  },
+  "applications": {
+      "gecko": {
+          "strict_min_version": "54.0a1"
+      }
   }
 }

@@ -48,7 +48,7 @@ a.tab {
     padding-bottom: 0.1em;
     margin-right: 0.3em;
     margin-left: 0.2em;
-    width: 100%;
+    width: 95%;
     text-overflow: ellipsis;
     display: inline-block;
     white-space: nowrap;
@@ -70,7 +70,7 @@ a.button {
 
 a.button:hover {
     color: whitesmoke;
-    background-color: #666;
+    background-color: darkblue;
 }
 
 a.button.close:hover {
@@ -127,23 +127,48 @@ a.button.right.drag {
 }
 
 a.sound {
-    background-color: grey;
+    background-color: green;
+    visibility: visible !important;
     color: white;
 }
 
 a.muted {
-    background-color: LightCoral;
+    background-color: darkblue;
+    visibility: visible !important;
     color: white;
 }
 
 a.muted.sound {
-    background: linear-gradient(to right, LightCoral, grey);
+    background: firebrick;
+    visibility: visible !important;
 }
 
 a.pin.pinned {
-    background-color: LightCoral;
-    color: white;
+    background-color: darkblue;
+    transform: rotateX(180deg);
+    color: white;s
 }
+
+div.wrapper.pinned + div.wrapper.unpinned {
+    border-top: 3px solid darkblue;
+}
+
+div.wrapper.pinned + div.wrapper.unpinned::before {
+    content: '⇧';
+    background-color: darkblue;
+    color: white;
+    padding: 0.55em;
+    margin-top: 0em;
+    display: block;
+    position: relative;
+    width: 1em;
+    top: -1em;
+    left: 1em;
+    font-size: 12px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
 
 a.drag {
   -moz-user-select: none;

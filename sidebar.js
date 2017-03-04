@@ -39,6 +39,7 @@ SideTab.prototype = {
     this.id = tab.id;
     this.url = tab.url;
     this.title = tab.title || 'Connecting...';
+    this.pinned = false;
 
     let div = document.createElement('div');
     div.className = 'wrapper';
@@ -87,7 +88,9 @@ SideTab.prototype = {
     this._get('tab').innerText = title;
   },
   setActive: function() {
-    this._get().classList.add('active');
+    let elm = this._get();
+    elm.classList.add('active');
+    elm.scrollIntoView();
   },
   setInactive: function() {
     this._get().classList.remove('active');
@@ -131,11 +134,25 @@ SideTab.prototype = {
     icon.src = 'rolling.svg';
     icon.style.visibility = 'unset';
   },
+  setError: function() {
+    let icon = this._get('icon');
+    icon.src = 'error.svg';
+    icon.style.visibility = 'unset';
+  },
+  resetIcon: function() {
+    let icon = this._get('icon');
+    icon.src = '';
+    icon.style.visibility = 'hidden';
+  },
   pinTab: function() {
     this._get('pin').classList.add('pinned');
+    this._get().classList.add('pinned');
+    this._get().classList.remove('unpinned');
   },
   unpinTab: function() {
     this._get('pin').classList.remove('pinned');
+    this._get().classList.remove('pinned');
+    this._get().classList.add('unpinned');
   }
 };
 
@@ -161,6 +178,7 @@ SideTabList.prototype = {
     if (tab.active) {
       this.setActive(tab.id);
     }
+    this.setMuted(tab, tab.mutedInfo);
     this.setAudible(tab);
     this.setIcon(tab);
     this.setPinned(tab);
@@ -216,7 +234,12 @@ SideTabList.prototype = {
   setIcon: function(tab) {
     if (tab.favIconUrl) {
       this.tabs[tab.id].setIcon(tab.favIconUrl);
+    } else {
+      this.tabs[tab.id].resetIcon();
     }
+  },
+  setError: function(tab) {
+    this.tabs[tab.id].setError();
   },
   setSpinner: function(tab) {
     this.tabs[tab.id].setSpinner();
@@ -253,13 +276,13 @@ browser.tabs.onRemoved.addListener((tabId, removeInfo) => {
 });
 
 browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.title) {
+  if (changeInfo.hasOwnProperty('title')) {
     sidetabs.setTitle(tab);
   }
-  if (changeInfo.mutedInfo) {
+  if (changeInfo.hasOwnProperty('mutedInfo')) {
     sidetabs.setMuted(tab, changeInfo.mutedInfo);
   }
-  if (changeInfo.audible) {
+  if (changeInfo.hasOwnProperty('audible')) {
     sidetabs.setAudible(tab, changeInfo.audible);
   }
   if (changeInfo.status === 'loading') {
@@ -277,11 +300,24 @@ browser.tabs.onDetached.addListener((tabId, details) => {
   sidetabs.remove(tabId);
 });
 
+browser.webNavigation.onCommitted.addListener((tabId, details) => {
+  sidetabs.setAudible(tab, false);
+});
+
 // WebNavigation Events.
 browser.webNavigation.onCompleted.addListener((details) => {
   browser.tabs.get(details.tabId)
   .then((tab) => {
     sidetabs.setTitle(tab);
+    sidetabs.setIcon(tab);
+  });
+});
+
+browser.webNavigation.onErrorOccurred.addListener((details) => {
+  console.log('setting error');
+  browser.tabs.get(details.tabId)
+  .then((tab) => {
+    sidetabs.setError(tab);
   });
 });
 
@@ -289,14 +325,6 @@ browser.webNavigation.onCompleted.addListener((details) => {
 document.getElementById('add').addEventListener(
   'click', ((event) => {
     browser.tabs.create();
-    event.preventDefault();
-  })
-);
-
-document.getElementById('reset').addEventListener(
-  'click', ((event) => {
-    sidetabs.reset();
-    sidetabs.populate();
     event.preventDefault();
   })
 );
@@ -316,6 +344,25 @@ document.getElementById('sort').addEventListener(
         {index: 0}
       );
     });
+    event.preventDefault();
+  })
+);
+
+document.getElementById('duplicates').addEventListener(
+  'click', ((event) => {
+    let found = [];
+
+    browser.tabs.query({currentWindow: true})
+    .then((tabs) => {
+      for (let tab of tabs) {
+        if (found.includes(tab.url)) {
+          browser.tabs.remove(tab.id);
+        } else {
+          found.push(tab.url);
+        }
+      }
+    });
+
     event.preventDefault();
   })
 );
