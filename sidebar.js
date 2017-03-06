@@ -166,10 +166,12 @@ SideTab.prototype = {
 var SideTabList = function(){
   this.tabs = {};
   this.active = null;
+  this.windowId = null;
 };
 
 SideTabList.prototype = {
-  populate: function() {
+  populate: function(windowId) {
+    this.windowId = windowId;
     browser.tabs.query({currentWindow: true})
     .then((tabs) => {
       for (let tab of tabs) {
@@ -178,6 +180,10 @@ SideTabList.prototype = {
     });
   },
   create: function(tab) {
+    // Skip over tabs that do not belong to this window.
+    if (tab.windowId != this.windowId) {
+      return;
+    }
     let sidetab = new SideTab();
     sidetab.create(tab);
     this.tabs[tab.id] = sidetab;
@@ -277,6 +283,10 @@ browser.tabs.onActivated.addListener((details) => {
 });
 
 browser.tabs.onCreated.addListener((tab) => {
+  console.log('onCreated');
+  console.log(tab.windowId);
+  console.log(browser.windows.WINDOW_ID_CURRENT);
+  console.log(browser.windows.getCurrent());
   sidetabs.create(tab);
 });
 
@@ -336,7 +346,7 @@ browser.webNavigation.onErrorOccurred.addListener((details) => {
 // Listen to top bar.
 document.getElementById('add').addEventListener(
   'click', ((event) => {
-    browser.tabs.create();
+    browser.tabs.create({});
     event.preventDefault();
   })
 );
@@ -442,8 +452,14 @@ function handleDrop(event) {
 
 // Start it up.
 var tabList = document.getElementById('list');
-var sidetabs = new SideTabList();
-sidetabs.populate();
+var sidetabs = null;
+browser.windows.getCurrent().then(
+  (data) => {
+    sidetabs = new SideTabList();
+    sidetabs.populate(data.id);
+  }
+);
+
 
 // Setup Drag and Drop
 var dragElement = null;

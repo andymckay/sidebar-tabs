@@ -3,7 +3,7 @@
   "homepage_url": "https://github.com/andymckay/sidebar-tabs",
   "manifest_version": 2,
   "name": "Sidebar Tabs",
-  "version": "1.0",
+  "version": "1.2",
   "sidebar_action": {
     "default_title": "Tabs Sidebar",
     "default_panel": "sidebar.html",
@@ -28,10 +28,8 @@
   },
   "applications": {
       "gecko": {
+          "id": "sidebar-tabs@mckay.pub",
           "strict_min_version": "54.0a1"
       }
-  },
-  "background": {
-    "scripts": ["background.js"]
   }
 }
