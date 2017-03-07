@@ -116,16 +116,16 @@ a.button.reload.reload {
     right: 26px;
 }
 
-a.button.right.drag {
+a.button.right.newWindow {
     right: 84px;
 }
 
-#top {
+#topMenu {
     padding-bottom: 1em;
     padding-left: 1.8em;
 }
 
-#top a {
+#topMenu a {
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
     padding-top: 0.5em;
@@ -136,8 +136,32 @@ a.button.right.drag {
     color: #333;
 }
 
-#top a:hover {
+#topMenu a:hover {
     border-bottom: 4px solid firebrick;
+}
+
+#topMenu.options {
+    background-color: #555;
+}
+
+#topOptionsMenu {
+    background-color: #555;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    font-size: 1em;
+    display: none;
+}
+
+#topOptionsMenu a {
+    display: block;
+    padding-left: 2em;
+    width: 100%;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+}
+
+#topOptionsMenu a:hover {
+    background-color: #333;
 }
 
 a.sound {

@@ -7,10 +7,15 @@
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
   </head>
   <body>
-    <div id="top" droppable="true">
-      <a id="add" href="about:newtab" title="New tab">+ New</a>
+    <div id="topMenu" droppable="true">
+      <a class="add" href="about:newtab" title="New tab">+ New</a>
       <a id="sort" href="#" title="Sort the tabs">Sort</a>
-      <a id="duplicates" href="#" title="Close duplicates">De-duplicate</a>
+      <a id="options" href="#" title="More options">Options</a>
+    </div>
+    <div id="topOptionsMenu" droppable="true">
+      <a id="reload" href="#" title="Reload all">Reload all</a>
+      <a id="duplicates" href="#" title="Close duplicates">De-duplicate unpinned tabs</a>
+      <a id="full" href="#" title="Full page">Open this in a full page</a>
     </div>
     <div id="list">
     </div>

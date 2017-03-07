@@ -9,12 +9,12 @@ var textMap = {
   reload: '↺',
   pin: '⇧',
   mute: '♫',
-  close: 'x'
+  close: 'x',
+  newWindow: '⇗'
 };
 
-if (browser.contextualIdentities === undefined) {
-  console.log('browser.contextualIdentities not available. Check that the privacy.userContext.enabled pref is set to true, and reload the add-on.');
-}
+var topMenu = document.getElementById('topMenu');
+var topOptionsMenu = document.getElementById('topOptionsMenu');
 
 SideTab.prototype = {
   _get: function(type) {
@@ -54,7 +54,7 @@ SideTab.prototype = {
       event.preventDefault();
     });
 
-    for (let method of ['close', 'reload', 'mute', 'pin']) {
+    for (let method of ['close', 'reload', 'mute', 'pin', 'newWindow']) {
       let button = document.createElement('a');
       button.className = `button right ${method}`;
       button.href = '#';
@@ -155,6 +155,9 @@ SideTab.prototype = {
     this._get().classList.add('unpinned');
   },
   setContext: function(context) {
+    if (!context) {
+      return;
+    }
     let span = this._get('context');
     span.style.visibility = 'unset';
     span.style.backgroundColor = context.color;
@@ -347,8 +350,10 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete') {
     sidetabs.setIcon(tab);
   }
-  if (changeInfo.pinned === true || changeInfo.pinned === false) {
-    sidetabs.setPinned(tab);
+  if (changeInfo.hasOwnProperty('pinned')) {
+    if (changeInfo.pinned === true || changeInfo.pinned === false) {
+      sidetabs.setPinned(tab);
+    }
   }
 });
 
@@ -372,13 +377,35 @@ browser.webNavigation.onErrorOccurred.addListener((details) => {
   });
 });
 
-// Listen to top bar.
-document.getElementById('add').addEventListener(
-  'click', ((event) => {
+function addClick(event) {
+  if (event.target.dataset.identity) {
+    browser.tabs.create({cookieStoreId: event.target.dataset.identity});
+  } else {
     browser.tabs.create({});
-    event.preventDefault();
-  })
-);
+  }
+  event.preventDefault();
+}
+
+if (browser.contextualIdentities === undefined) {
+  console.log('browser.contextualIdentities not available. Check that the privacy.userContext.enabled pref is set to true, and reload the add-on.');
+} else {
+  browser.contextualIdentities.query({})
+    .then((identities) => {
+      for (let identity of identities) {
+        var link = document.createElement('a');
+        link.innerText = `New ${identity.name} tab`;
+        link.href = '#';
+        link.className = 'add';
+        link.dataset.identity = identity.cookieStoreId;
+        link.addEventListener('click', addClick);
+        topOptionsMenu.insertBefore(link, topOptionsMenu.getElementsByTagName('a')[0]);
+      }
+    }
+  );
+}
+
+
+document.getElementsByClassName('add')[0].addEventListener('click', addClick);
 
 document.getElementById('sort').addEventListener(
   'click', ((event) => {
@@ -418,6 +445,38 @@ document.getElementById('duplicates').addEventListener(
   })
 );
 
+document.getElementById('full').addEventListener(
+  'click', ((event) => {
+    browser.tabs.create({url: 'sidebar.html'});
+    event.preventDefault();
+  })
+);
+
+document.getElementById('reload').addEventListener(
+  'click', ((event) => {
+    browser.tabs.query({currentWindow: true})
+    .then((tabs) => {
+      for (let tab of tabs) {
+        browser.tabs.reload(tab.id);
+      }
+    });
+    event.preventDefault();
+  })
+);
+
+document.getElementById('options').addEventListener(
+  'click', ((event) => {
+    if (topMenu.classList.contains('options')) {
+      topMenu.classList.remove('options');
+      topOptionsMenu.style.display = 'none';
+    } else {
+      topMenu.classList.add('options');
+      topOptionsMenu.style.display = 'block';
+    }
+    event.preventDefault();
+  })
+);
+
 // Button events.
 function buttonEvent(event) {
   let tabId = parseInt(event.target.parentNode.id);
@@ -440,6 +499,9 @@ function buttonEvent(event) {
     } else {
       browser.tabs.update(tabId, {'pinned': true});
     }
+  }
+  if (event.target.classList.contains('newWindow')) {
+    browser.windows.create({tabId: tabId});
   }
   event.preventDefault();
 }
@@ -467,12 +529,12 @@ function handleDrop(event) {
   }
 
   let pos = 0;
-  if (element.id != 'top') {
-    try {
+  if (element.id != 'topMenu' || element.id != 'topOptionsMenu') {
+    //try {
       pos = sidetabs.getPos(element.id) + 1;
-    } catch (e if e instanceof TypeError) {
-      console.log(`No tab of id ${element.id} for drop, invalid target?`);
-    }
+    //} catch (e if e instanceof TypeError) {
+    //  console.log(`No tab of id ${element.id} for drop, invalid target?`);
+    //}
   }
 
   browser.tabs.move(parseInt(tabId), {index: pos});
@@ -489,8 +551,10 @@ browser.windows.getCurrent().then(
   }
 );
 
-
 // Setup Drag and Drop
 var dragElement = null;
-document.getElementById('top').addEventListener('drop', handleDrop);
-document.getElementById('top').addEventListener('dragover', handleDragOver);
+topMenu.addEventListener('drop', handleDrop);
+topMenu.addEventListener('dragover', handleDragOver);
+
+topOptionsMenu.addEventListener('drop', handleDrop);
+topOptionsMenu.addEventListener('dragover', handleDragOver);

@@ -16,8 +16,9 @@ This is a simple implementation of an add-on that shows tabs in the sidebar. It 
 * pinning drag and drop
 * tab errors
 * contextualIdentities
+* creating tabs in a new identity
+* moving tabs to new window
 
 To do:
 
-* moving tabs to new window
-* creating tabs in a new identity
+* bugs?
