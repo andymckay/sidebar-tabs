@@ -240,13 +240,6 @@ SideTabList.prototype = {
       delete this.tabs[tabId];
     }
   },
-  reset: function() {
-    for (let tabId of Object.keys(this.tabs)) {
-      this.tabs[tabId].remove();
-    }
-    this.tabs = {};
-    this.active = null;
-  },
   getPos: function(tabId) {
     let tabEntry = this.getTabById(tabId);
     if (tabEntry) {
