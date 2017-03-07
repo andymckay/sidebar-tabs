@@ -184,7 +184,7 @@ a.muted.sound {
 a.pin.pinned {
     background-color: darkblue;
     transform: rotateX(180deg);
-    color: white;s
+    color: white;
 }
 
 div.wrapper.pinned + div.wrapper.unpinned {
