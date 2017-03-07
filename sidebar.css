@@ -62,9 +62,11 @@ a.button {
     padding-bottom: 0.1em;
     margin-left: 0.2em;
     margin-right: 0.2em;
+    padding-top: 1px;
     padding-left: 0.3em;
     padding-right: 0.3em;
     border-radius: 3px;
+    height: 16px;
     background-color: #222;
 }
 
@@ -128,7 +130,8 @@ a.button.right.newWindow {
 #topMenu a {
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
-    padding-top: 0.5em;
+    margin-top: 1em;
+    padding-top: 0.8em;
     padding-bottom: 0.3em;
     padding-left: 0.5em;
     padding-right: 0.5em;
@@ -142,6 +145,14 @@ a.button.right.newWindow {
 
 #topMenu.options {
     background-color: #555;
+}
+
+#topMenu #options::before {
+    content: '☞ ';
+}
+
+#topMenu.options #options::before {
+    content: '☟ ';
 }
 
 #topOptionsMenu {
@@ -206,7 +217,6 @@ div.wrapper.pinned + div.wrapper.unpinned::before {
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
 }
-
 
 a.drag {
   -moz-user-select: none;

@@ -167,7 +167,7 @@ SideTab.prototype = {
 
 // Tab List
 var SideTabList = function(){
-  this.tabs = {};
+  this.tabs = new Map();
   this.active = null;
   this.windowId = null;
 };
@@ -182,8 +182,17 @@ SideTabList.prototype = {
       }
     });
   },
-  checkWindow: function(tab) {
+  checkWindow(tab) {
     return (tab.windowId == this.windowId);
+  },
+  getTab: function(tab) {
+    if (this.checkWindow(tab)) {
+      return this.getTabById(tab.id);
+    }
+    return null;
+  },
+  getTabById: function(tabId) {
+    return this.tabs.get(tabId, null);
   },
   create: function(tab) {
     if (!this.checkWindow(tab)) {
@@ -191,7 +200,7 @@ SideTabList.prototype = {
     }
     let sidetab = new SideTab();
     sidetab.create(tab);
-    this.tabs[tab.id] = sidetab;
+    this.tabs.set(tab.id, sidetab);
     if (tab.active) {
       this.setActive(tab.id);
     }
@@ -209,29 +218,29 @@ SideTabList.prototype = {
     }
   },
   setActive: function(tabId) {
-    if (!this.tabs[tabId]) {
-      return;
+    let tabEntry = this.getTabById(tabId);
+    if (tabEntry) {
+      tabEntry.setActive();
+      this.active = tabId;
+      if (this.active) {
+        tabEntry.setInactive();
+      }
     }
-    if (this.active) {
-      this.tabs[this.active].setInactive();
-    }
-    this.tabs[tabId].setActive();
-    this.active = tabId;
   },
   setTitle: function(tab) {
-    if (!this.checkWindow(tab)) {
-      return;
+    let tabEntry = this.getTab(tab);
+    if (tabEntry) {
+      tabEntry.updateTitle(tab.title);
     }
-    this.tabs[tab.id].updateTitle(tab.title);
   },
   remove: function(tabId) {
-    this.tabs[tabId].remove();
-    delete this.tabs[tabId];
+    let tabEntry = this.getTabById(tabId);
+    if (tabEntry) {
+      tabEntry.remove();
+      delete this.tabs[tabId];
+    }
   },
   reset: function() {
-    if (!this.checkWindow(tab)) {
-      return;
-    }
     for (let tabId of Object.keys(this.tabs)) {
       this.tabs[tabId].remove();
     }
@@ -239,76 +248,81 @@ SideTabList.prototype = {
     this.active = null;
   },
   getPos: function(tabId) {
-    return this.tabs[tabId].getPos();
+    let tabEntry = this.getTabById(tabId);
+    if (tabEntry) {
+      return tabEntry.getPos();
+    }
   },
   setPos: function(tabId, pos) {
-    this.tabs[tabId].setPos(pos);
+    let tabEntry = this.getTabById(tabId);
+    if (tabEntry) {
+      tabEntry.setPos(pos);
+    }
   },
   setAudible: function(tab) {
-    if (!this.checkWindow(tab)) {
-      return;
-    }
-    if (tab.audible) {
-      this.tabs[tab.id].setAudible();
-    } else {
-      this.tabs[tab.id].setNotAudible();
+    let tabEntry = this.getTab(tab);
+    if (tabEntry) {
+      if (tab.audible) {
+        tabEntry.setAudible();
+      } else {
+        tabEntry.setNotAudible();
+      }
     }
   },
   setMuted: function(tab, mutedInfo) {
-    if (!this.checkWindow(tab)) {
-      return;
-    }
-    if (mutedInfo.muted) {
-      this.tabs[tab.id].setMuted();
-    } else {
-      this.tabs[tab.id].setNotMuted();
+    let tabEntry = this.getTab(tab);
+    if (tabEntry) {
+      if (mutedInfo.muted) {
+        tabEntry.setMuted();
+      } else {
+        tabEntry.setNotMuted();
+      }
     }
   },
   setNotMuted: function(tab, muted) {
-    if (!this.checkWindow(tab)) {
-      return;
+    let tabEntry = this.getTab(tab);
+    if (tabEntry) {
+      tabEntry.setNotMuted();
     }
-    this.tabs[tab.id].setNotMuted();
   },
   setIcon: function(tab) {
-    if (!this.checkWindow(tab)) {
-      return;
-    }
-    if (tab.favIconUrl) {
-      this.tabs[tab.id].setIcon(tab.favIconUrl);
-    } else {
-      this.tabs[tab.id].resetIcon();
+    let tabEntry = this.getTab(tab);
+    if (tabEntry) {
+      if (tab.favIconUrl) {
+        tabEntry.setIcon(tab.favIconUrl);
+      } else {
+        tabEntry.resetIcon();
+      }
     }
   },
   setError: function(tab) {
-    if (!this.checkWindow(tab)) {
-      return;
+    let tabEntry = this.getTab(tab);
+    if (tabEntry) {
+      tabEntry.setError();
     }
-    this.tabs[tab.id].setError();
   },
   setSpinner: function(tab) {
-    if (!this.checkWindow(tab)) {
-      return;
-    }
-    if (this.tabs[tab.id]) {
-      this.tabs[tab.id].setSpinner();
+    let tabEntry = this.getTab(tab);
+    if (tabEntry) {
+      tabEntry.setSpinner();
     }
   },
   setPinned: function(tab) {
-    if (!this.checkWindow(tab)) {
-      return;
-    }
-    if (tab.pinned) {
-      this.tabs[tab.id].pinTab();
-    } else {
-      this.tabs[tab.id].unpinTab();
+    let tabEntry = this.getTab(tab);
+    if (tabEntry) {
+      if (tab.pinned) {
+        tabEntry.pinTab();
+      } else {
+        tabEntry.unpinTab();
+      }
     }
   },
   setContext: function(tab, context) {
-    if (!this.checkWindow(tab)) {
-      return;
+    let tabEntry = this.getTab(tab);
+    if (tabEntry) {
+      tabEntry.setContext(context);
     }
-    this.tabs[tab.id].setContext(context);
+
   },
 };
 
@@ -528,13 +542,13 @@ function handleDrop(event) {
     element = element.parentNode;
   }
 
-  let pos = 0;
-  if (element.id != 'topMenu' || element.id != 'topOptionsMenu') {
-    //try {
-      pos = sidetabs.getPos(element.id) + 1;
-    //} catch (e if e instanceof TypeError) {
-    //  console.log(`No tab of id ${element.id} for drop, invalid target?`);
-    //}
+  let current = sidetabs.getPos(parseInt(tabId));
+  let pos = sidetabs.getPos(parseInt(element.id));
+  if (typeof pos === 'undefined') {
+    pos = 0;
+  } else {
+    pos = parseInt(pos);
+    pos = current > pos ? pos + 1 : pos;
   }
 
   browser.tabs.move(parseInt(tabId), {index: pos});
