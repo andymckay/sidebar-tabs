@@ -18,11 +18,11 @@ div.wrapper {
 }
 
 div.active {
-    background: #333;
+    background: #222;
 }
 
 div.wrapper:hover {
-    background: #222;
+    background: #333;
 }
 
 div.wrapper a.button {
@@ -65,7 +65,7 @@ a.button {
     padding-left: 0.3em;
     padding-right: 0.3em;
     border-radius: 3px;
-    background-color: #333;
+    background-color: #222;
 }
 
 a.button:hover {
