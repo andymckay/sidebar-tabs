@@ -316,6 +316,7 @@ browser.tabs.onActivated.addListener((details) => {
 
 browser.tabs.onCreated.addListener((tab) => {
   sidetabs.create(tab);
+  sidetabs.setPos(tab.id, tab.index);
 });
 
 browser.tabs.onMoved.addListener((tabId, moveInfo) => {
