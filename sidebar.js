@@ -30,7 +30,7 @@ SideTab.prototype = {
   _getIds: function() {
     return Array.prototype.map.call(
       this._getList(),
-      (elem) => { return parseInt(elem.id) }
+      (elem) => { return parseInt(elem.id); }
     );
   },
   create: function(tab) {
@@ -179,9 +179,11 @@ SideTabList.prototype = {
       }
     });
   },
+  checkWindow: function(tab) {
+    return (tab.windowId == this.windowId);
+  },
   create: function(tab) {
-    // Skip over tabs that do not belong to this window.
-    if (tab.windowId != this.windowId) {
+    if (!this.checkWindow(tab)) {
       return;
     }
     let sidetab = new SideTab();
@@ -198,22 +200,25 @@ SideTabList.prototype = {
     if (tab.cookieStoreId) {
       browser.contextualIdentities.get(tab.cookieStoreId)
         .then((context) => {
-          this.setContext(tab, context)
+          this.setContext(tab, context);
         }
       );
     }
   },
   setActive: function(tabId) {
-    if (this.active) {
-      this.tabs[this.active].setInactive();
-    }
     if (!this.tabs[tabId]) {
       return;
+    }
+    if (this.active) {
+      this.tabs[this.active].setInactive();
     }
     this.tabs[tabId].setActive();
     this.active = tabId;
   },
   setTitle: function(tab) {
+    if (!this.checkWindow(tab)) {
+      return;
+    }
     this.tabs[tab.id].updateTitle(tab.title);
   },
   remove: function(tabId) {
@@ -221,6 +226,9 @@ SideTabList.prototype = {
     delete this.tabs[tabId];
   },
   reset: function() {
+    if (!this.checkWindow(tab)) {
+      return;
+    }
     for (let tabId of Object.keys(this.tabs)) {
       this.tabs[tabId].remove();
     }
@@ -234,6 +242,9 @@ SideTabList.prototype = {
     this.tabs[tabId].setPos(pos);
   },
   setAudible: function(tab) {
+    if (!this.checkWindow(tab)) {
+      return;
+    }
     if (tab.audible) {
       this.tabs[tab.id].setAudible();
     } else {
@@ -241,6 +252,9 @@ SideTabList.prototype = {
     }
   },
   setMuted: function(tab, mutedInfo) {
+    if (!this.checkWindow(tab)) {
+      return;
+    }
     if (mutedInfo.muted) {
       this.tabs[tab.id].setMuted();
     } else {
@@ -248,9 +262,15 @@ SideTabList.prototype = {
     }
   },
   setNotMuted: function(tab, muted) {
+    if (!this.checkWindow(tab)) {
+      return;
+    }
     this.tabs[tab.id].setNotMuted();
   },
   setIcon: function(tab) {
+    if (!this.checkWindow(tab)) {
+      return;
+    }
     if (tab.favIconUrl) {
       this.tabs[tab.id].setIcon(tab.favIconUrl);
     } else {
@@ -258,14 +278,23 @@ SideTabList.prototype = {
     }
   },
   setError: function(tab) {
+    if (!this.checkWindow(tab)) {
+      return;
+    }
     this.tabs[tab.id].setError();
   },
   setSpinner: function(tab) {
+    if (!this.checkWindow(tab)) {
+      return;
+    }
     if (this.tabs[tab.id]) {
       this.tabs[tab.id].setSpinner();
     }
   },
   setPinned: function(tab) {
+    if (!this.checkWindow(tab)) {
+      return;
+    }
     if (tab.pinned) {
       this.tabs[tab.id].pinTab();
     } else {
@@ -273,6 +302,9 @@ SideTabList.prototype = {
     }
   },
   setContext: function(tab, context) {
+    if (!this.checkWindow(tab)) {
+      return;
+    }
     this.tabs[tab.id].setContext(context);
   },
 };
@@ -283,10 +315,6 @@ browser.tabs.onActivated.addListener((details) => {
 });
 
 browser.tabs.onCreated.addListener((tab) => {
-  console.log('onCreated');
-  console.log(tab.windowId);
-  console.log(browser.windows.WINDOW_ID_CURRENT);
-  console.log(browser.windows.getCurrent());
   sidetabs.create(tab);
 });
 
