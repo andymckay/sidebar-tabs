@@ -179,12 +179,6 @@ SideTabList.prototype = {
       }
     });
   },
-  getFirst() {
-
-  },
-  getLast() {
-
-  },
   checkWindow(tab) {
     return (tab.windowId == this.windowId);
   },
