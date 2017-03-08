@@ -220,10 +220,10 @@ SideTabList.prototype = {
   setActive: function(tabId) {
     let tabEntry = this.getTabById(tabId);
     if (tabEntry) {
-      tabEntry.setActive();
       if (this.active) {
-        tabEntry.setInactive();
+        this.getTabById(this.active).setInactive();
       }
+      tabEntry.setActive();
       this.active = tabId;
     }
   },
