@@ -56,6 +56,7 @@ SideTab.prototype = {
       button.className = `button right ${method}`;
       button.href = '#';
       button.innerText = textMap[method];
+      button.title = method;
       button.addEventListener('click', buttonEvent);
       div.appendChild(button);
     }
