@@ -1,8 +1,15 @@
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Source Sans Pro'), local('SourceSansPro-Regular'), url('font.ttf') format('truetype');
+}
+
 body, div {
     padding: 0;
     margin: 0;
     font-size: 12px;
-    background: #444;
+    background-color: #555;
     font-family: 'Source Sans Pro', sans-serif;
     min-width: 200px;
 }
@@ -15,6 +22,7 @@ div.wrapper {
     font-size: 1.1em;
     white-space: nowrap;
     overflow: hidden;
+    background-color: #444;
 }
 
 div.active {
@@ -125,6 +133,7 @@ a.button.right.newWindow {
 #topMenu {
     padding-bottom: 1em;
     padding-left: 1.8em;
+    border-bottom: 2px solid darkgrey;
 }
 
 #topMenu a {
@@ -137,14 +146,16 @@ a.button.right.newWindow {
     padding-right: 0.5em;
     background-color: #f6f6f6;
     color: #333;
+    border-bottom: 2px solid darkgrey;
 }
 
 #topMenu a:hover {
-    border-bottom: 4px solid firebrick;
+    border-bottom: 2px solid firebrick;
 }
 
 #topMenu.options {
     background-color: #555;
+    border-bottom: none;
 }
 
 #topMenu #options::before {
@@ -156,14 +167,23 @@ a.button.right.newWindow {
 }
 
 #topOptionsMenu {
+    display: none;
+    border-bottom: 2px solid darkgrey;
+}
+
+#bottomOptionsMenu {
+    border-top: 2px solid darkgrey;
+    height: 100%;
+}
+
+.subOptionsMenu {
     background-color: #555;
     padding-top: 0.5em;
     padding-bottom: 0.5em;
     font-size: 1em;
-    display: none;
 }
 
-#topOptionsMenu a {
+.subOptionsMenu a {
     display: block;
     padding-left: 2em;
     width: 100%;
@@ -171,7 +191,7 @@ a.button.right.newWindow {
     padding-bottom: 0.5em;
 }
 
-#topOptionsMenu a:hover {
+.subOptionsMenu a:hover {
     background-color: #333;
 }
 

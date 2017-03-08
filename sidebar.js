@@ -24,12 +24,9 @@ SideTab.prototype = {
     }
     return wrapper;
   },
-  _getList: function() {
-    return tabList.getElementsByClassName('wrapper');
-  },
   _getIds: function() {
     return Array.prototype.map.call(
-      this._getList(),
+      getList(),
       (elem) => { return parseInt(elem.id); }
     );
   },
@@ -100,7 +97,7 @@ SideTab.prototype = {
   },
   setPos: function(pos) {
     let element = this._get();
-    let elements = this._getList();
+    let elements = getList();
     if (!elements[pos]) {
       tabList.insertBefore(element, elements[pos-1].nextSibling);
     } else {
@@ -181,6 +178,12 @@ SideTabList.prototype = {
         this.create(tab);
       }
     });
+  },
+  getFirst() {
+
+  },
+  getLast() {
+
   },
   checkWindow(tab) {
     return (tab.windowId == this.windowId);
@@ -384,6 +387,10 @@ browser.webNavigation.onErrorOccurred.addListener((details) => {
   });
 });
 
+function getList() {
+  return tabList.getElementsByClassName('wrapper');
+}
+
 function addClick(event) {
   if (event.target.dataset.identity) {
     browser.tabs.create({cookieStoreId: event.target.dataset.identity});
@@ -455,6 +462,20 @@ document.getElementById('duplicates').addEventListener(
 document.getElementById('full').addEventListener(
   'click', ((event) => {
     browser.tabs.create({url: 'sidebar.html'});
+    event.preventDefault();
+  })
+);
+
+document.getElementById('top').addEventListener(
+  'click', ((event) => {
+    document.getElementById('topMenu').scrollIntoView();
+    event.preventDefault();
+  })
+);
+
+document.getElementById('bottom').addEventListener(
+  'click', ((event) => {
+    document.getElementById('bottomMenu').scrollIntoView();
     event.preventDefault();
   })
 );

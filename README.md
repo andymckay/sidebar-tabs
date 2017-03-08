@@ -22,3 +22,7 @@ This is a simple implementation of an add-on that shows tabs in the sidebar. It 
 To do:
 
 * bugs?
+
+Font is from:
+
+https://fonts.gstatic.com/s/sourcesanspro/v9/ODelI1aHBYDBqgeIAH2zlNzbP97U9sKh0jjxbPbfOKg.ttf
