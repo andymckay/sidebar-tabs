@@ -223,17 +223,17 @@ div.wrapper.pinned + div.wrapper.unpinned {
 }
 
 div.wrapper.pinned + div.wrapper.unpinned::before {
-    content: '⇧';
+    content: '⇧ PIN';
     background-color: darkblue;
     color: white;
     padding: 0.55em;
     margin-top: 0em;
     display: block;
     position: relative;
-    width: 1em;
-    top: -1em;
+    width: 3em;
+    top: -1.7em;
     left: 1em;
-    font-size: 12px;
+    font-size: 6px;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
 }
