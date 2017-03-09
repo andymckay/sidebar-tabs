@@ -9,7 +9,7 @@ body, div {
     padding: 0;
     margin: 0;
     font-size: 12px;
-    background-color: #555;
+    background-color: #444;
     font-family: 'Source Sans Pro', sans-serif;
     min-width: 150px;
 }
@@ -26,7 +26,7 @@ div.wrapper {
 }
 
 div.active {
-    background: #222;
+    background: linear-gradient( 0deg, #111, #222);
 }
 
 div.wrapper:hover {
@@ -110,10 +110,10 @@ a.button.right {
     z-index: 1;
     float: right;
 }
+
 #topMenu {
     padding-bottom: 1em;
     padding-left: 0.8em;
-    border-bottom: 2px solid darkgrey;
 }
 
 #topMenu a {
@@ -135,7 +135,6 @@ a.button.right {
 
 #topMenu.options {
     background-color: #555;
-    border-bottom: none;
 }
 
 #topMenu #options::before {
@@ -148,19 +147,14 @@ a.button.right {
 
 #topOptionsMenu {
     display: none;
-    border-bottom: 2px solid darkgrey;
-}
-
-#bottomOptionsMenu {
-    border-top: 2px solid darkgrey;
-    height: 100%;
 }
 
 .subOptionsMenu {
-    background-color: #555;
+    background: #555;
     padding-top: 0.5em;
     padding-bottom: 0.5em;
     font-size: 1em;
+    border-bottom: 2px solid firebrick;
 }
 
 .subOptionsMenu a {
@@ -196,35 +190,16 @@ a.pin.pinned {
     background-color: darkblue;
     transform: rotateX(180deg);
     color: white;
+    visibility: visible !important;
 }
 
 div.wrapper.pinned + div.wrapper.unpinned {
     border-top: 3px solid darkblue;
 }
 
-div.wrapper.pinned + div.wrapper.unpinned::before {
-    content: '⇧ PIN';
-    background-color: darkblue;
-    color: white;
-    padding: 0.55em;
-    margin-top: 0em;
-    display: block;
-    position: relative;
-    width: 3em;
-    top: -1.7em;
-    left: 1em;
-    font-size: 6px;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-}
-
 a.drag {
   -moz-user-select: none;
   cursor: move;
-}
-
-.over {
-   border-bottom: 1px solid darkblue;
 }
 
 img.icon {

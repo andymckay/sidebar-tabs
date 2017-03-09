@@ -174,7 +174,9 @@ var SideTabList = function(){
 
 SideTabList.prototype = {
   populate: function(windowId) {
-    this.windowId = windowId;
+    if (windowId && this.windowId === null) {
+      this.windowId = windowId;
+    }
     browser.tabs.query({currentWindow: true})
     .then((tabs) => {
       for (let tab of tabs) {
@@ -315,8 +317,13 @@ SideTabList.prototype = {
     if (tabEntry) {
       tabEntry.setContext(context);
     }
-
   },
+  rebuild: function() {
+    for (let entries of this.tabs) {
+      entries[1].remove();
+    }
+    this.tabs = new Map();
+  }
 };
 
 // Tabs Events.
@@ -463,13 +470,6 @@ document.getElementById('full').addEventListener(
   })
 );
 
-document.getElementById('top').addEventListener(
-  'click', ((event) => {
-    document.getElementById('topMenu').scrollIntoView();
-    event.preventDefault();
-  })
-);
-
 document.getElementById('bottom').addEventListener(
   'click', ((event) => {
     document.getElementById('bottomMenu').scrollIntoView();
@@ -485,6 +485,15 @@ document.getElementById('reload').addEventListener(
         browser.tabs.reload(tab.id);
       }
     });
+    event.preventDefault();
+  })
+);
+
+document.getElementById('rebuild').addEventListener(
+  'click', ((event) => {
+    console.log('in rebuild');
+    sidetabs.rebuild();
+    sidetabs.populate(null);
     event.preventDefault();
   })
 );
