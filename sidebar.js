@@ -65,6 +65,8 @@ SideTab.prototype = {
     icon.className = 'icon';
     icon.style.visibility = 'hidden';
 
+    icon.addEventListener('error', handleImageError);
+
     let context = document.createElement('span');
     context.className = 'context';
     context.style.visibility = 'hidden';
@@ -527,6 +529,11 @@ function buttonEvent(event) {
     browser.windows.create({tabId: tabId});
   }
   event.preventDefault();
+}
+
+function handleImageError(event) {
+  event.target.src = '';
+  event.target.style.visibility = 'hidden';
 }
 
 // Drag and drop events.
