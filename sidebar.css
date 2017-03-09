@@ -11,7 +11,7 @@ body, div {
     font-size: 12px;
     background-color: #555;
     font-family: 'Source Sans Pro', sans-serif;
-    min-width: 200px;
+    min-width: 150px;
 }
 
 div.wrapper {
@@ -112,7 +112,7 @@ a.button.right {
 }
 #topMenu {
     padding-bottom: 1em;
-    padding-left: 1.8em;
+    padding-left: 0.8em;
     border-bottom: 2px solid darkgrey;
 }
 
