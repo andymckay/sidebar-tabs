@@ -11,7 +11,7 @@ body, div {
     font-size: 12px;
     background-color: #555;
     font-family: 'Source Sans Pro', sans-serif;
-    min-width: 200px;
+    min-width: 150px;
 }
 
 div.wrapper {
@@ -106,33 +106,13 @@ div.wrapper:hover span.context {
 }
 
 a.button.right {
-    position: absolute;
+    position: relative;
     z-index: 1;
+    float: right;
 }
-
-a.button.right.close {
-    right: 10px;
-}
-
-a.button.right.pin {
-    right: 62px;
-}
-
-a.button.right.mute {
-    right: 43px;
-}
-
-a.button.reload.reload {
-    right: 26px;
-}
-
-a.button.right.newWindow {
-    right: 84px;
-}
-
 #topMenu {
     padding-bottom: 1em;
-    padding-left: 1.8em;
+    padding-left: 0.8em;
     border-bottom: 2px solid darkgrey;
 }
 
