@@ -1,5 +1,7 @@
 Please don't use this. At this stage it's very much a proof of concept. It's full of bugs I'm sure.
 
+A version is up on AMO: https://addons.mozilla.org/en-US/firefox/addon/sidebar-tabs-webextension/
+
 This is a simple implementation of an add-on that shows tabs in the sidebar. It features:
 
 * new tab creation

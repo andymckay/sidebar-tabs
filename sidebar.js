@@ -427,7 +427,7 @@ document.getElementsByClassName('add')[0].addEventListener('click', addClick);
 
 document.getElementById('sort').addEventListener(
   'click', ((event) => {
-    browser.tabs.query({currentWindow: true})
+    browser.tabs.query({currentWindow: true, pinned: false})
     .then((tabs) => {
       tabs.sort((a, b) => {
         function normalise(url) {
@@ -435,10 +435,11 @@ document.getElementById('sort').addEventListener(
         }
         return normalise(a.url) > normalise(b.url);
       });
-      return browser.tabs.move(
-        tabs.map((tab) => { return tab.id; }),
-        {index: 0}
-      );
+      console.log(tabs.map((tab) => { return `${tab.id}, ${tab.url}`; }));
+      for (let tab of tabs) {
+        console.log(`${tab}`);
+        browser.tabs.move(tab.id, {index: 0});
+      }
     });
     event.preventDefault();
   })
@@ -470,13 +471,6 @@ document.getElementById('full').addEventListener(
   })
 );
 
-document.getElementById('bottom').addEventListener(
-  'click', ((event) => {
-    document.getElementById('bottomMenu').scrollIntoView();
-    event.preventDefault();
-  })
-);
-
 document.getElementById('reload').addEventListener(
   'click', ((event) => {
     browser.tabs.query({currentWindow: true})
@@ -491,7 +485,6 @@ document.getElementById('reload').addEventListener(
 
 document.getElementById('rebuild').addEventListener(
   'click', ((event) => {
-    console.log('in rebuild');
     sidetabs.rebuild();
     sidetabs.populate(null);
     event.preventDefault();
@@ -535,7 +528,18 @@ function buttonEvent(event) {
     }
   }
   if (event.target.classList.contains('newWindow')) {
-    browser.windows.create({tabId: tabId});
+    browser.tabs.get(tabId)
+      .then((tab) => {
+        let pinned = tab.pinned;
+        let muted = tab.muted;
+        browser.windows.create({tabId: tabId})
+          .then((tabs) => {
+            browser.tabs.update(tabId, {
+              'muted': muted,
+              'pinned': pinned
+            });
+          });
+      });
   }
   event.preventDefault();
 }
@@ -592,6 +596,7 @@ browser.windows.getCurrent().then(
 
 // Setup Drag and Drop
 var dragElement = null;
+
 topMenu.addEventListener('drop', handleDrop);
 topMenu.addEventListener('dragover', handleDragOver);
 
