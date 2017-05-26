@@ -5,6 +5,8 @@ var SideTab = function(){
   this.title = null;
 };
 
+const debug = true;
+
 var textMap = {
   reload: '↺',
   pin: '⇧',
@@ -18,11 +20,16 @@ var topOptionsMenu = document.getElementById('topOptionsMenu');
 
 SideTab.prototype = {
   _get: function(type) {
-    let wrapper = document.getElementById(this.id);
-    if (type) {
-      return wrapper.getElementsByClassName(type)[0];
-    }
-    return wrapper;
+    return new Promise((resolve, reject) => {
+      let wrapper = document.getElementById(this.id);
+      if (wrapper && type) {
+        wrapper = wrapper.getElementsByClassName(type)[0];
+      }
+      if (!wrapper) {
+        reject(`sidebar-tabs: no wrapper for ${type} for ${this.id}`);
+      }
+      resolve(wrapper);
+    });
   },
   _getIds: function() {
     return Array.prototype.map.call(
@@ -45,13 +52,14 @@ SideTab.prototype = {
     a.className = 'tab';
     a.innerText = this.url;
     a.href = this.url;
+    a.title = this.url
 
     a.addEventListener('click', (event) => {
       browser.tabs.update(this.id, {active: true});
       event.preventDefault();
     });
 
-    for (let method of ['close', 'reload', 'mute', 'pin', 'newWindow']) {
+    for (let method of ['close', 'pin', 'reload', 'mute', 'newWindow']) {
       let button = document.createElement('a');
       button.className = `button right ${method}`;
       button.href = '#';
@@ -81,87 +89,102 @@ SideTab.prototype = {
     div.addEventListener('drop', handleDrop, false);
   },
   remove: function() {
-    this._get().remove();
+    this._get().then((node) => { node.remove(); });
   },
   updateTitle: function(title) {
     this.title = title;
-    this._get('tab').innerText = title;
+    this._get('tab').then((node) => { node.innerText = title; });
   },
   setActive: function() {
-    let elm = this._get();
-    elm.classList.add('active');
-    elm.scrollIntoView();
+    this._get().then((node) => {
+      node.classList.add('active');
+      node.scrollIntoView();
+    });
   },
   setInactive: function() {
-    this._get().classList.remove('active');
+    this._get().then((node) => { node.classList.remove('active'); });
   },
   getPos: function() {
     return this._getIds().indexOf(this.id);
   },
   setPos: function(pos) {
-    let element = this._get();
-    let elements = getList();
-    if (!elements[pos]) {
-      tabList.insertBefore(element, elements[pos-1].nextSibling);
-    } else {
-      tabList.insertBefore(element, elements[pos]);
-    }
+    this._get().then((element) => {
+      let elements = getList();
+      if (!elements[pos]) {
+        tabList.insertBefore(element, elements[pos-1].nextSibling);
+      } else {
+        tabList.insertBefore(element, elements[pos]);
+      }
+    });
   },
   setAudible: function() {
-    this._get('mute').classList.add('sound');
+    this._get('mute').then((node) => { node.classList.add('sound'); });
   },
   setNotAudible: function() {
-    this._get('mute').classList.remove('sound');
+    this._get('mute').then((node) => { node.classList.remove('sound'); });
   },
   setMuted: function() {
-    this._get('mute').classList.add('muted');
+    this._get('mute').then((node) => { node.classList.add('muted'); });
   },
   setNotMuted: function() {
-    this._get('mute').classList.remove('muted');
+    this._get('mute').then((node) => { node.classList.remove('muted'); });
   },
   setIcon: function(url) {
-    let icon = this._get('icon');
-    if (!url) {
-      icon.src = '';
-      icon.style.visibility = 'hidden';
-    } else {
-      icon.src = url;
-      icon.style.visibility = 'unset';
-    }
+    this._get('icon').then((icon) => {
+      if (!url) {
+        icon.src = '';
+        icon.style.visibility = 'hidden';
+      } else {
+        icon.src = url;
+        icon.style.visibility = 'unset';
+      }
+    });
   },
   setSpinner: function() {
-    let icon = this._get('icon');
-    icon.src = 'rolling.svg';
-    icon.style.visibility = 'unset';
+    let icon = this._get('icon').then((icon) => {
+      icon.src = 'rolling.svg';
+      icon.style.visibility = 'unset';
+    });
   },
   setError: function() {
-    let icon = this._get('icon');
-    icon.src = 'error.svg';
-    icon.style.visibility = 'unset';
+    let icon = this._get('icon').then((icon) => {
+      icon.src = 'error.svg';
+      icon.style.visibility = 'unset';
+    });
   },
   resetIcon: function() {
-    let icon = this._get('icon');
-    icon.src = '';
-    icon.style.visibility = 'hidden';
+    let icon = this._get('icon').then((icon) => {
+      icon.src = '';
+      icon.style.visibility = 'unset';
+    });
   },
   pinTab: function() {
-    this._get('pin').classList.add('pinned');
-    this._get().classList.add('pinned');
-    this._get().classList.remove('unpinned');
+    this._get('pin').then((node) => {
+      node.classList.add('pinned');
+      this._get().then((node) => {
+        node.classList.add('pinned');
+        node.classList.remove('unpinned');
+      });
+    });
   },
   unpinTab: function() {
-    this._get('pin').classList.remove('pinned');
-    this._get().classList.remove('pinned');
-    this._get().classList.add('unpinned');
+    this._get('pin').then((node) => {
+      node.classList.remove('pinned');
+      this._get().then((node) => {
+        node.classList.remove('pinned');
+        node.classList.add('unpinned');
+      });
+    });
   },
   setContext: function(context) {
     if (!context) {
       return;
     }
-    let span = this._get('context');
-    span.style.visibility = 'unset';
-    span.style.backgroundColor = context.color;
-    span.title = context.name;
+    let span = this._get('context').then((node) => {
+      node.style.visibility = 'unset';
+      node.style.backgroundColor = context.color;
+      node.title = context.name;
+    });
   }
 };
 
@@ -328,15 +351,24 @@ SideTabList.prototype = {
 
 // Tabs Events.
 browser.tabs.onActivated.addListener((details) => {
+  if (debug) {
+    console.log(`browser.tabs.onActivated: ${details}`);
+  }
   sidetabs.setActive(details.tabId);
 });
 
 browser.tabs.onCreated.addListener((tab) => {
+  if (debug) {
+    console.log(`browser.tabs.onCreated: ${tab}`);
+  }
   sidetabs.create(tab);
   sidetabs.setPos(tab.id, tab.index);
 });
 
 browser.tabs.onMoved.addListener((tabId, moveInfo) => {
+  if (debug) {
+    console.log(`browser.tabs.onMoved: ${tabId}, ${moveInfo}`);
+  }
   sidetabs.getPos(tabId);
   sidetabs.setPos(tabId,
     moveInfo.fromIndex < moveInfo.toIndex ?
@@ -345,10 +377,16 @@ browser.tabs.onMoved.addListener((tabId, moveInfo) => {
 });
 
 browser.tabs.onRemoved.addListener((tabId, removeInfo) => {
+  if (debug) {
+    console.log(`browser.tabs.onCreated: ${tabId}, ${removeInfo}`);
+  }
   sidetabs.remove(tabId);
 });
 
 browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (debug) {
+    console.log(`browser.tabs.onUpdated: ${tabId}, ${changeInfo}, ${tab}`);
+  }
   if (changeInfo.hasOwnProperty('title')) {
     sidetabs.setTitle(tab);
   }
@@ -372,11 +410,17 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 });
 
 browser.tabs.onDetached.addListener((tabId, details) => {
+  if (debug) {
+    console.log(`browser.tabs.onDetached: ${tabId}, ${details}`);
+  }
   sidetabs.remove(tabId);
 });
 
 // WebNavigation Events.
 browser.webNavigation.onCompleted.addListener((details) => {
+  if (debug) {
+    console.log(`browser.webNavigation.onCompleted: ${details}`);
+  }
   browser.tabs.get(details.tabId)
   .then((tab) => {
     sidetabs.setTitle(tab);
@@ -385,6 +429,9 @@ browser.webNavigation.onCompleted.addListener((details) => {
 });
 
 browser.webNavigation.onErrorOccurred.addListener((details) => {
+  if (debug) {
+    console.log(`browser.webNavigation.onErrorOccurred: ${details}`);
+  }
   browser.tabs.get(details.tabId)
   .then((tab) => {
     sidetabs.setError(tab);
@@ -422,24 +469,28 @@ if (browser.contextualIdentities === undefined) {
   );
 }
 
-
 document.getElementsByClassName('add')[0].addEventListener('click', addClick);
 
 document.getElementById('sort').addEventListener(
   'click', ((event) => {
-    browser.tabs.query({currentWindow: true, pinned: false})
-    .then((tabs) => {
-      tabs.sort((a, b) => {
-        function normalise(url) {
-          return url.split('//')[1] || url;
-        }
-        return normalise(a.url) > normalise(b.url);
-      });
-      console.log(tabs.map((tab) => { return `${tab.id}, ${tab.url}`; }));
-      for (let tab of tabs) {
-        console.log(`${tab}`);
-        browser.tabs.move(tab.id, {index: 0});
-      }
+    function sortTabs(a, b) {
+      return (a.url.split('//')[1] || a.url) > (b.url.split('//')[1] || b.url);
+    }
+
+    let pinned_length = 0;
+    browser.tabs.query(
+      {pinned: true, currentWindow: true}
+    ).then((pinned) => {
+      pinned_length = pinned.length;
+      return browser.tabs.query(
+        {pinned: false, currentWindow: true}
+      );
+    }).then((tabs) => {
+      tabs.sort(sortTabs);
+      return browser.tabs.move(
+        tabs.map(function(i) { return i.id;}),
+        {index: pinned_length}
+      );
     });
     event.preventDefault();
   })
