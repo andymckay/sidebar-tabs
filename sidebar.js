@@ -5,7 +5,7 @@ var SideTab = function(){
   this.title = null;
 };
 
-const debug = true;
+const debug = false;
 
 var textMap = {
   reload: '↺',
