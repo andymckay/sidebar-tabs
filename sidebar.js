@@ -451,7 +451,7 @@ browser.webNavigation.onErrorOccurred.addListener((details) => {
 });
 
 function tabOnClick(event) {
-  browser.tabs.update(this.id, {active: true});
+  browser.tabs.update(parseInt(event.target.parentNode.id), {active: true});
   event.preventDefault();
 }
 
