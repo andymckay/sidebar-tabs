@@ -14,7 +14,7 @@ var textMap = {
   close: 'x',
   newWindow: '⇗'
 };
-
+var buttons = ['close', 'pin', 'reload', 'mute', 'newWindow'];
 var topMenu = document.getElementById('topMenu');
 var topOptionsMenu = document.getElementById('topOptionsMenu');
 
@@ -52,14 +52,11 @@ SideTab.prototype = {
     a.className = 'tab';
     a.innerText = this.url;
     a.href = this.url;
-    a.title = this.url
+    a.title = this.url;
 
-    a.addEventListener('click', (event) => {
-      browser.tabs.update(this.id, {active: true});
-      event.preventDefault();
-    });
+    a.addEventListener('click', tabOnClick);
 
-    for (let method of ['close', 'pin', 'reload', 'mute', 'newWindow']) {
+    for (let method of buttons) {
       let button = document.createElement('a');
       button.className = `button right ${method}`;
       button.href = '#';
@@ -219,9 +216,17 @@ SideTabList.prototype = {
   getTabById: function(tabId) {
     return this.tabs.get(tabId, null);
   },
+  attach: function(tabId) {
+    browser.tabs.get(tabId)
+    .then((tab) => {
+      this.create(tab);
+      this.setPos(tab.id, tab.index);
+      return tab;
+    });
+  },
   create: function(tab) {
     if (!this.checkWindow(tab)) {
-      return;
+      return null;
     }
     let sidetab = new SideTab();
     sidetab.create(tab);
@@ -352,22 +357,29 @@ SideTabList.prototype = {
 // Tabs Events.
 browser.tabs.onActivated.addListener((details) => {
   if (debug) {
-    console.log(`browser.tabs.onActivated: ${details}`);
+    console.log('browser.tabs.onActivated: %o', [details]);
   }
   sidetabs.setActive(details.tabId);
 });
 
 browser.tabs.onCreated.addListener((tab) => {
   if (debug) {
-    console.log(`browser.tabs.onCreated: ${tab}`);
+    console.log('browser.tabs.onCreated: %o', [tab]);
   }
   sidetabs.create(tab);
   sidetabs.setPos(tab.id, tab.index);
 });
 
+browser.tabs.onAttached.addListener((tabId, attachInfo) => {
+  if (debug) {
+    console.log('browser.tabs.onAttached: %o', [tabId, attachInfo]);
+  }
+  sidetabs.attach(tabId);
+});
+
 browser.tabs.onMoved.addListener((tabId, moveInfo) => {
   if (debug) {
-    console.log(`browser.tabs.onMoved: ${tabId}, ${moveInfo}`);
+    console.log('browser.tabs.onMoved: %o', [tabId, moveInfo]);
   }
   sidetabs.getPos(tabId);
   sidetabs.setPos(tabId,
@@ -378,14 +390,14 @@ browser.tabs.onMoved.addListener((tabId, moveInfo) => {
 
 browser.tabs.onRemoved.addListener((tabId, removeInfo) => {
   if (debug) {
-    console.log(`browser.tabs.onCreated: ${tabId}, ${removeInfo}`);
+    console.log('browser.tabs.onCreated: %o', [tabId, removeInfo]);
   }
   sidetabs.remove(tabId);
 });
 
 browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (debug) {
-    console.log(`browser.tabs.onUpdated: ${tabId}, ${changeInfo}, ${tab}`);
+    console.log('browser.tabs.onUpdated: %o', [tabId, changeInfo, tab]);
   }
   if (changeInfo.hasOwnProperty('title')) {
     sidetabs.setTitle(tab);
@@ -411,7 +423,7 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 browser.tabs.onDetached.addListener((tabId, details) => {
   if (debug) {
-    console.log(`browser.tabs.onDetached: ${tabId}, ${details}`);
+    console.log('browser.tabs.onDetached: %o', [tabId, details]);
   }
   sidetabs.remove(tabId);
 });
@@ -419,7 +431,7 @@ browser.tabs.onDetached.addListener((tabId, details) => {
 // WebNavigation Events.
 browser.webNavigation.onCompleted.addListener((details) => {
   if (debug) {
-    console.log(`browser.webNavigation.onCompleted: ${details}`);
+    console.log('browser.webNavigation.onCompleted: %o', [details]);
   }
   browser.tabs.get(details.tabId)
   .then((tab) => {
@@ -430,13 +442,18 @@ browser.webNavigation.onCompleted.addListener((details) => {
 
 browser.webNavigation.onErrorOccurred.addListener((details) => {
   if (debug) {
-    console.log(`browser.webNavigation.onErrorOccurred: ${details}`);
+    console.log('browser.webNavigation.onErrorOccurred: %o', [details]);
   }
   browser.tabs.get(details.tabId)
   .then((tab) => {
     sidetabs.setError(tab);
   });
 });
+
+function tabOnClick(event) {
+  browser.tabs.update(this.id, {active: true});
+  event.preventDefault();
+}
 
 function getList() {
   return tabList.getElementsByClassName('wrapper');
@@ -596,8 +613,9 @@ function buttonEvent(event) {
 }
 
 function handleImageError(event) {
-  event.target.src = '';
+  event.target.src = 'error.svg';
   event.target.style.visibility = 'hidden';
+  event.preventDefault();
 }
 
 // Drag and drop events.
