@@ -113,7 +113,9 @@ a.button.right {
 
 #topMenu {
     padding-bottom: 1em;
-    padding-left: 0.8em;
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    -webkit-box-pack: center;
 }
 
 #topMenu a {
